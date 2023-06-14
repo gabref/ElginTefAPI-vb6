@@ -1,0 +1,11 @@
+{
+    "oi": "testeee", 
+    "hasInner": {
+        "inner": "dentruuu"
+    },
+    "tef": {
+        "retorno": "9",
+        "comprovanteDiferenciadoLoja": "oia o comprovante da loja",
+        "sequencial": "numero qualquer sequencial"
+    }
+}
