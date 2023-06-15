@@ -1,0 +1,13 @@
+{
+    "identificadorPontoCaptura": "T003",
+    "ipClientTCP": "127.0.0.1",
+    "loja": "01",
+    "nomeEstabelecimento": "Elgin",
+    "operacaoPendenciaCustomizada": true,
+    "portaClientTCP": 60906,
+    "sAdm": "",
+    "textoPinpad": "ApiTEFElgin VB6",
+    "uAdm": "",
+    "verificarTransacoesPendentes": 1,
+    "versaoAC": "v1.0.1"
+}
