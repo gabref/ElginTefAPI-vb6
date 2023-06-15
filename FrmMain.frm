@@ -1,54 +1,48 @@
 VERSION 5.00
 Begin VB.Form FrmMain 
    Caption         =   "Menu"
-   ClientHeight    =   6750
+   ClientHeight    =   4290
    ClientLeft      =   60
    ClientTop       =   405
-   ClientWidth     =   11055
+   ClientWidth     =   6345
    LinkTopic       =   "Form1"
-   ScaleHeight     =   6750
-   ScaleWidth      =   11055
+   ScaleHeight     =   4290
+   ScaleWidth      =   6345
    StartUpPosition =   3  'Windows Default
    Begin VB.CommandButton btnCarregar 
       Caption         =   "Carregar Funções"
+      BeginProperty Font 
+         Name            =   "Verdana"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   615
-      Left            =   1080
-      TabIndex        =   4
-      Top             =   5400
-      Width           =   3975
+      Left            =   840
+      TabIndex        =   1
+      Top             =   2760
+      Width           =   4455
    End
    Begin VB.ListBox lstMenu 
-      Height          =   1035
+      BeginProperty Font 
+         Name            =   "Verdana"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   1410
       ItemData        =   "FrmMain.frx":0000
       Left            =   840
       List            =   "FrmMain.frx":0002
-      TabIndex        =   3
-      Top             =   3960
-      Width           =   4215
-   End
-   Begin VB.CommandButton Command3 
-      Caption         =   "Command3"
-      Height          =   1095
-      Left            =   840
-      TabIndex        =   2
-      Top             =   1920
-      Width           =   1575
-   End
-   Begin VB.CommandButton Command2 
-      Caption         =   "Command2"
-      Height          =   1095
-      Left            =   840
-      TabIndex        =   1
-      Top             =   480
-      Width           =   1695
-   End
-   Begin VB.CommandButton Command1 
-      Caption         =   "Command1"
-      Height          =   2295
-      Left            =   4440
       TabIndex        =   0
-      Top             =   960
-      Width           =   3975
+      Top             =   840
+      Width           =   4455
    End
 End
 Attribute VB_Name = "FrmMain"
@@ -63,47 +57,11 @@ Private Sub btnCarregar_Click()
     selected = lstMenu.ListIndex
     If selected = Defines.PAGINA_PAGAMENTOS Then
         FrmPagamento.Show
-    ElseIf selected = Defines.PAGINA_ADM Then
+    ElseIf selected = Defines.PAGINA_COLETA_PINPAD Then
+        FrmColetaPinPad.Show
     Else
+        MsgBox "Selecione uma opção válida"
     End If
-End Sub
-
-Private Sub Command1_Click()
-    Dim test As String
-    Dim testjb As JsonBag
-    
-    Dim start As String
-    Dim retorno As String
-    Dim sequencial As String
-    Dim resp As String
-    
-    start = StrPtrToString(Iniciar)
-    MsgBox start
-    retorno = GetRetorno(start)
-    If retorno = "1" Then
-        sequencial = incrementarSequencial(GetSequencial(start))
-        
-        MsgBox "vamos esperar um pouco o click do 2"
-        
-        Do While Not buttonClicked
-            DoEvents
-        Loop
-        buttonClicked = False
-        
-        resp = StrPtrToString(Vender(0, sequencial, 1))
-        
-        MsgBox "Resp vender: " & resp
-        
-    End If
-    
-End Sub
-
-Private Sub Command2_Click()
-    buttonClicked = True
-End Sub
-
-Private Sub Command3_Click()
-    Debug.Print lstMenu.Visible
 End Sub
 
 Private Function Iniciar() As String
@@ -145,10 +103,7 @@ Private Function Vender(ByVal cartao As Integer, ByVal sequencial As String, ByV
 End Function
 
 Private Sub Form_Load()
-    lstMenu.AddItem ("Operações TEF")
-    lstMenu.AddItem ("Operações Administrativas")
+    lstMenu.AddItem ("Operações TEF e Adm")
     lstMenu.AddItem ("Operações de Coleta PinPad")
     lstMenu.ListIndex = 0
-    
-    buttonClicked = False
 End Sub

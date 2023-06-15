@@ -67,19 +67,19 @@ Public Function MostrarBotoes(ByVal mensagem As String) As Boolean
     Dim msgArray As Variant
     msgArray = Array("aguarde", "finalizada", "passagem", "cancelada", "iniciando confirmação")
     
-    Dim I As Integer
+    Dim i As Integer
     Dim msgToLower As String
     msgToLower = LCase(mensagem)
     
     Dim showButtons As Boolean
     showButtons = True
     
-    For I = LBound(msgArray) To UBound(msgArray)
-        If InStr(msgToLower, LCase(msgArray(I))) <> 0 Then
+    For i = LBound(msgArray) To UBound(msgArray)
+        If InStr(msgToLower, LCase(msgArray(i))) <> 0 Then
             showButtons = False
             Exit For
         End If
-    Next I
+    Next i
     
     MostrarBotoes = showButtons
 End Function
@@ -91,3 +91,37 @@ Public Function StrPtrToString(ByVal ponteiro As Long) As String
     Saida = SysAllocStringByteLen(ponteiro, lstrlenA(ponteiro))
     StrPtrToString = Saida
 End Function
+
+
+Public Function HexToByteArray(ByVal hexString As String) As Byte()
+    ' Remove any leading "0x" from the hex string
+    hexString = Replace(hexString, "0x", "")
+    
+    ' Calculate the number of bytes in the byte array
+    Dim numBytes As Long
+    numBytes = Len(hexString) \ 2
+    
+    ' Create a byte array of the appropriate size
+    ReDim byteArray(0 To numBytes - 1) As Byte
+    
+    ' Convert each pair of hex characters to a byte
+    Dim i As Long
+    For i = 0 To numBytes - 1
+        byteArray(i) = Val("&H" & Mid(hexString, i * 2 + 1, 2))
+    Next i
+    
+    ' Return the resulting byte array
+    HexToByteArray = byteArray
+End Function
+
+
+Public Sub SaveByteArrayAsBitmapFile(ByRef byteArray() As Byte, ByVal filePath As String)
+    ' Create a binary file and write the byte array to it
+    Dim fileNumber As Integer
+    fileNumber = FreeFile
+    
+    Open filePath For Binary Access Write As fileNumber
+    Put fileNumber, , byteArray
+    Close fileNumber
+End Sub
+

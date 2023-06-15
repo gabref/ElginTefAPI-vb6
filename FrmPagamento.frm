@@ -9,15 +9,33 @@ Begin VB.Form FrmPagamento
    ScaleHeight     =   8460
    ScaleWidth      =   13650
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton btnIniciarADM 
+      Caption         =   "Administrativo"
+      BeginProperty Font 
+         Name            =   "Verdana"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   735
+      Left            =   600
+      TabIndex        =   12
+      Top             =   2640
+      Width           =   2055
+   End
    Begin VB.Frame frameLogs 
       Caption         =   "Logs"
-      Height          =   7935
+      Height          =   8055
       Left            =   5760
       TabIndex        =   10
-      Top             =   240
+      Top             =   120
       Width           =   7695
       Begin VB.TextBox txtLogs 
-         Height          =   7335
+         DragMode        =   1  'Automatic
+         Height          =   7455
          Left            =   240
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
@@ -28,81 +46,170 @@ Begin VB.Form FrmPagamento
    End
    Begin VB.CommandButton btnCancelar 
       Caption         =   "Cancelar"
-      Height          =   495
-      Left            =   1920
+      BeginProperty Font 
+         Name            =   "Verdana"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   1800
       TabIndex        =   9
-      Top             =   7440
+      Top             =   7320
       Width           =   1575
    End
    Begin VB.Frame frameOperador 
       Caption         =   "Processamento Operador"
-      Height          =   3375
+      Height          =   4215
       Left            =   240
       TabIndex        =   4
-      Top             =   4800
+      Top             =   3960
       Width           =   5295
       Begin VB.CommandButton btnOk 
          Caption         =   "OK"
-         Height          =   495
-         Left            =   3480
+         BeginProperty Font 
+            Name            =   "Verdana"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   615
+         Left            =   3360
          TabIndex        =   8
-         Top             =   2640
+         Top             =   3360
          Width           =   1575
       End
       Begin VB.ListBox lstOperador 
-         Height          =   645
+         BeginProperty Font 
+            Name            =   "Verdana"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   1410
          Left            =   240
          TabIndex        =   7
-         Top             =   1680
+         Top             =   1440
          Visible         =   0   'False
-         Width           =   4815
+         Width           =   4695
       End
       Begin VB.TextBox txtOperador 
-         Height          =   285
-         Left            =   120
+         BeginProperty Font 
+            Name            =   "Verdana"
+            Size            =   12
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   405
+         Left            =   240
          TabIndex        =   6
-         Top             =   1080
-         Width           =   4935
+         Top             =   1200
+         Width           =   4695
+      End
+      Begin VB.Image imgQRCode 
+         Height          =   2295
+         Left            =   1200
+         Top             =   840
+         Width           =   2295
       End
       Begin VB.Label lblOperador 
          Caption         =   "Label Operador"
-         Height          =   375
-         Left            =   120
+         BeginProperty Font 
+            Name            =   "Verdana"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   435
+         Left            =   240
          TabIndex        =   5
          Top             =   480
-         Width           =   4935
+         Width           =   4815
       End
    End
    Begin VB.CommandButton btnIniciarPIX 
       Caption         =   "Iniciar PIX"
-      Height          =   975
-      Left            =   3240
+      BeginProperty Font 
+         Name            =   "Verdana"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   735
+      Left            =   3000
       TabIndex        =   3
-      Top             =   3240
-      Width           =   1695
+      Top             =   1560
+      Width           =   2055
    End
    Begin VB.Frame frameValor 
       Caption         =   "Valor"
-      Height          =   4455
+      Height          =   3615
       Left            =   240
       TabIndex        =   0
       Top             =   120
       Width           =   5295
       Begin VB.CommandButton btnIniciarTEF 
          Caption         =   "Iniciar TEF"
-         Height          =   975
-         Left            =   480
+         BeginProperty Font 
+            Name            =   "Verdana"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   735
+         Left            =   360
          TabIndex        =   2
-         Top             =   3120
-         Width           =   1695
+         Top             =   1440
+         Width           =   2055
       End
       Begin VB.TextBox lblValor 
+         Alignment       =   1  'Right Justify
+         BeginProperty DataFormat 
+            Type            =   1
+            Format          =   "0,00"
+            HaveTrueFalseNull=   0
+            FirstDayOfWeek  =   0
+            FirstWeekOfYear =   0
+            LCID            =   1046
+            SubFormatType   =   1
+         EndProperty
+         BeginProperty Font 
+            Name            =   "Verdana"
+            Size            =   15.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
          Height          =   615
-         Left            =   480
+         Left            =   360
+         MaxLength       =   8
          TabIndex        =   1
          Text            =   "1.27"
          Top             =   480
-         Width           =   3975
+         Width           =   4455
       End
    End
 End
@@ -167,6 +274,10 @@ Private Sub btnOk_Click()
     OkEvent
 End Sub
 
+Private Sub Command1_Click()
+    MsgBox lblValor.Text
+End Sub
+
 Private Sub Form_Load()
     continuarColeta = False
     lblOperador.Visible = False
@@ -174,6 +285,7 @@ Private Sub Form_Load()
     lstOperador.Visible = False
     btnCancelar.Visible = False
     btnOk.Visible = False
+    imgQRCode.Visible = False
 End Sub
 
 Private Sub txtOperador_KeyPress(KeyAscii As Integer)
@@ -195,6 +307,7 @@ Private Sub btnIniciarPIX_Click()
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    valorTotal = lblValor.Text
     lblValor.Text = ""
     
     ElginTEF
@@ -206,7 +319,17 @@ Private Sub btnIniciarTEF_Click()
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    valorTotal = lblValor.Text
     lblValor.Text = ""
+    
+    ElginTEF
+End Sub
+
+Private Sub btnIniciarADM_Click()
+    operacaoAtual = Defines.OPERACAO_ADM
+    
+    lblOperador.Visible = True
+    lblOperador.Caption = "AGUARDE..."
     
     ElginTEF
 End Sub
@@ -222,6 +345,12 @@ Private Sub printTela(ByVal msg As String)
     
     ' qrcode pix
     If InStr(msg, "QRCODE;") Then
+        ShowQRCode msg
+        
+        'imgQRCode.Visible = True
+        'btnOk.Visible = True
+        'btnCancelar.Visible = True
+        
     Else
         lblOperador.Caption = msg
         lblOperador.Visible = True
@@ -262,6 +391,38 @@ Private Sub writeLogs(ByVal logs As String)
     txtLogs.Text = txtLogs & Defines.DIV_LOGS & logs
 End Sub
 
+' Funções PIX
+Public Sub ShowQRCode(qrCodeData As String)
+    ' split the input string into its components
+    Dim components() As String
+    components = Split(qrCodeData, ";")
+    
+    ' extract the hex string from the component
+    Dim hexString As String
+    hexString = components(1)
+    
+    ' convert hex to byte array
+    Dim imageBytes() As Byte
+    imageBytes = HexToByteArray(hexString)
+    
+    ' save the byte array as a temporary file
+    Dim tempFilePath As String
+    tempFilePath = App.Path & "\temp_qrcode_image.bmp"
+    SaveByteArrayAsBitmapFile imageBytes, tempFilePath
+    
+    ' load the image file into the image control
+    'boxQRCode.Picture = LoadPicture(App.Path & "\logo-idh.jpg")
+    'imgQRCode.Picture = LoadPicture(App.Path & "\temp_qrcode_image.jpg")
+    'imgQRCode.Visible = True
+    
+    'Dim hbitmap As Long
+    'hbitmap = LoadImage(App.hInstance, tempFilePath, 0, 0, 0, Defines.LR_LOADFROMFILE)
+    'MsgBox hbitmap
+    ' delete the temporary file
+    'Kill tempFilePath
+End Sub
+
+
 ' ================================================
 ' =============== LÓGICA DO TEF ==================
 ' ================================================
@@ -279,7 +440,7 @@ Private Sub ElginTEF()
     ' (1) INICIAR CONEXÃO COM CLIENT
     start = Iniciar
     
-    ' fas o parse do retorno da função iniciar
+    ' faz o parse do retorno da função iniciar
     retorno = GetRetorno(start)
     ' dependendo do resultado da função iniciar definido na variável "retorno" o
     ' fluxo poderá terminar ou continuar
@@ -293,6 +454,8 @@ Private Sub ElginTEF()
     
     If operacaoAtual = Defines.OPERACAO_TEF Then
         resp = Vender(0, sequencial, Defines.OPERACAO_TEF)
+    ElseIf operacaoAtual = Defines.OPERACAO_ADM Then
+        resp = Adm(0, sequencial)
     Else
         resp = Vender(0, sequencial, Defines.OPERACAO_PIX)
     End If
@@ -300,7 +463,7 @@ Private Sub ElginTEF()
     retorno = GetRetorno(resp)
     
     If retorno = "" Then
-        resp = Coletar(Defines.OPERACAO_TEF, Jsonify(resp))
+        resp = Coletar(operacaoAtual, Jsonify(resp))
         retorno = GetRetorno(resp)
     End If
     
@@ -391,6 +554,26 @@ Private Function Vender(ByVal cartao As Integer, ByVal sequencial As String, ByV
     Vender = resultado
 End Function
 
+Private Function Adm(ByVal opcao As Integer, ByVal sequencial As String) As String
+    Dim resultado As String
+    Dim payload As JsonBag
+    Set payload = New JsonBag
+    
+    ' logs
+    writeLogs ("ADM: " & "SEQUENCIAL USADO NA VENDA" & sequencial)
+    
+    payload.Item("sequencial") = sequencial
+    
+    resultado = StrPtrToString(RealizarAdmTEF(CLng(opcao), Stringify(payload), True))
+    
+    ' logs
+    writeLogs ("ADM: " & Jsonify(resultado).JSON)
+    
+    Set payload = Nothing
+    
+    Adm = resultado
+End Function
+
 Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As String
     ' chaves utilizadas na coleta
     Dim coletaRetorno As String ' In/Out; out: 0 = continuar coleta, 9 = cancelar coleta
@@ -462,12 +645,10 @@ Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As St
     ' informa dados coletados
     If operacao = Defines.OPERACAO_ADM Then
         resp = StrPtrToString(RealizarAdmTEF(0, Stringify(payload), False))
+    ElseIf operacao = Defines.OPERACAO_TEF Then
+        resp = StrPtrToString(RealizarPagamentoTEF(0, Stringify(payload), False))
     Else
-        If operacaoAtual = Defines.OPERACAO_PIX Then
-            resp = StrPtrToString(RealizarPixTEF(Stringify(payload), False))
-        Else
-            resp = StrPtrToString(RealizarPagamentoTEF(0, Stringify(payload), False))
-        End If
+        resp = StrPtrToString(RealizarPixTEF(Stringify(payload), False))
     End If
     
     ' libera memória ocupada pela instancia jsonbag
