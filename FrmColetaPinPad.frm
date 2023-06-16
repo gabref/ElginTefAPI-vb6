@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FrmColetaPinPad 
-   Caption         =   "Form1"
+   Caption         =   "Coleta"
    ClientHeight    =   7845
    ClientLeft      =   60
    ClientTop       =   405
@@ -175,6 +175,7 @@ Private Sub btnColeta_Click()
     writeLogs ("OPÇÕES ESCOLHIDAS")
     writeLogs ("tipoColeta: " & CStr(tipoColeta))
     writeLogs ("confirmar: " & confirmarStr)
+    DoEvents
     
     ' realiza coleta
     retorno = StrPtrToString(RealizarColetaPinPad(tipoColeta, confirmar))
@@ -184,6 +185,7 @@ Private Sub btnColeta_Click()
         ' pega o valor digitado pelo usuário no pinpad
         resultadoCapturaPinPad = GetStringValue(Jsonify(retorno), "tef", "resultadoCapturaPinPad")
         writeLogs ("RESULTADO CAPTURA: " & resultadoCapturaPinPad)
+        DoEvents
     Else
         Finalizar (GetStringValue(Jsonify(retorno), "tef", "mensagemResultado"))
         Exit Sub
@@ -193,6 +195,7 @@ Private Sub btnColeta_Click()
     writeLogs (Defines.DIV_LOGS)
     writeLogs ("RETORNO DLL: RealizarColetaPinPad")
     writeLogs (retorno)
+    DoEvents
     
     ' se a variável <confirmar> for true, a confirmação será feita automaticamente
     ' caso o desenvolvedor queira fazer algo com o valor antes da confirmação,
@@ -204,6 +207,7 @@ Private Sub btnColeta_Click()
     
     writeLogs (Defines.DIV_LOGS)
     writeLogs ("INICIANDO CONFIRMAÇÃO")
+    DoEvents
     
     ' faz algo com o valor coletado
     ' nesse exemplo são adicionadas as máscaras dos valores
@@ -229,6 +233,7 @@ Private Sub btnColeta_Click()
         ' logs do retorno da dll
         writeLogs ("RETORNO DLL: ConfirmarCapturaPinPad")
         writeLogs (retorno)
+        DoEvents
     Else
         Finalizar (GetStringValue(Jsonify(retorno), "tef", "mensagemResultado"))
         Exit Sub
@@ -270,6 +275,7 @@ Private Sub Finalizar(ByVal razao As String)
         writeLogs ("FINALIZADA OPERAÇÃO COM ERRO!")
         writeLogs (retorno)
     End If
+    DoEvents
 End Sub
 
 Private Sub writeLogs(ByVal msg As String)
