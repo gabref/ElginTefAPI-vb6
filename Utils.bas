@@ -70,21 +70,21 @@ End Function
 
 Public Function MostrarBotoes(ByVal mensagem As String) As Boolean
     Dim msgArray As Variant
-    msgArray = Array("aguarde", "finalizada", "passagem", "cancelada", "iniciando confirmação")
+    msgArray = Array("aguarde", "finalizada", "passagem", "cancelada", "erro ao coletar dados", "iniciando confirmação", "transacao aprovada", "nao ha transacoes")
     
-    Dim I As Integer
+    Dim i As Integer
     Dim msgToLower As String
     msgToLower = LCase(mensagem)
     
     Dim showButtons As Boolean
     showButtons = True
     
-    For I = LBound(msgArray) To UBound(msgArray)
-        If InStr(msgToLower, LCase(msgArray(I))) <> 0 Then
+    For i = LBound(msgArray) To UBound(msgArray)
+        If InStr(msgToLower, LCase(msgArray(i))) <> 0 Then
             showButtons = False
             Exit For
         End If
-    Next I
+    Next i
     
     MostrarBotoes = showButtons
 End Function
@@ -96,7 +96,6 @@ Public Function StrPtrToString(ByVal ponteiro As Long) As String
     Saida = SysAllocStringByteLen(ponteiro, lstrlenA(ponteiro))
     StrPtrToString = Saida
 End Function
-
 
 Public Function HexToByteArray(ByVal hexString As String) As Byte()
     ' Remove any leading "0x" from the hex string
@@ -110,10 +109,10 @@ Public Function HexToByteArray(ByVal hexString As String) As Byte()
     ReDim byteArray(0 To numBytes - 1) As Byte
     
     ' Convert each pair of hex characters to a byte
-    Dim I As Long
-    For I = 0 To numBytes - 1
-        byteArray(I) = Val("&H" & Mid(hexString, I * 2 + 1, 2))
-    Next I
+    Dim i As Long
+    For i = 0 To numBytes - 1
+        byteArray(i) = Val("&H" & Mid(hexString, i * 2 + 1, 2))
+    Next i
     
     ' Return the resulting byte array
     HexToByteArray = byteArray

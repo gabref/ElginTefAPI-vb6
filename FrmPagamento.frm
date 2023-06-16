@@ -34,7 +34,6 @@ Begin VB.Form FrmPagamento
       Top             =   120
       Width           =   7695
       Begin VB.TextBox txtLogs 
-         DragMode        =   1  'Automatic
          Height          =   7455
          Left            =   240
          MultiLine       =   -1  'True
@@ -119,10 +118,10 @@ Begin VB.Form FrmPagamento
          Width           =   4695
       End
       Begin VB.Image imgQRCode 
-         Height          =   2295
-         Left            =   1200
+         Height          =   2895
+         Left            =   960
          Top             =   840
-         Width           =   2295
+         Width           =   2895
       End
       Begin VB.Label lblOperador 
          Caption         =   "Label Operador"
@@ -166,14 +165,6 @@ Begin VB.Form FrmPagamento
       TabIndex        =   0
       Top             =   120
       Width           =   5295
-      Begin VB.CommandButton Command1 
-         Caption         =   "Command1"
-         Height          =   495
-         Left            =   3000
-         TabIndex        =   13
-         Top             =   2760
-         Width           =   1815
-      End
       Begin VB.CommandButton btnIniciarTEF 
          Caption         =   "Iniciar TEF"
          BeginProperty Font 
@@ -295,18 +286,6 @@ Private Sub txtOperador_KeyPress(KeyAscii As Integer)
     End If
 End Sub
 
-' botão de testes
-Private Sub Command1_Click()
-    Dim qrdata As String
-    Dim f As Integer
-    f = FreeFile(0)
-    Open "qrTest.txt" For Input As #f
-    qrdata = Input$(LOF(f), #f)
-    Close #f
-    
-    ShowQRCode qrdata
-End Sub
-
 ' ao criar form resetar UI
 ' e resetar variável que controla o fluxo de coleta
 Private Sub Form_Load()
@@ -323,11 +302,19 @@ End Sub
 Private Sub btnCancelar_Click()
     ' define a variável global retornoUI = 0
     retornoUI = "0"
+    
+    ' reseta UI
+    txtOperador.Text = ""
+    lblOperador.Visible = False
+    txtOperador.Visible = False
+    btnOk.Visible = False
+    btnCancelar.Visible = False
+    lstOperador.Visible = False
 
     ' define variavel global cancelarColeta = 9 para que quando o fluxo da
     ' transação for retomado, a transação seja cancelada (na função coleta)
     cancelarColeta = "9"
-    continuarColeta = True
+    continuaColeta = True
 End Sub
 
 ' botão que inicia o fluxo de uma transação PIX
@@ -342,12 +329,20 @@ Private Sub btnIniciarPIX_Click()
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    btnIniciarTEF.Enabled = False
+    btnIniciarADM.Enabled = False
+    btnIniciarPIX.Enabled = False
+    
     ' reseta o label do valor da transação
     valorTotal = lblValor.Text
     lblValor.Text = ""
     
     ' iniciafluxo responsável por iniciar a transação
     ElginTEF
+    
+    btnIniciarTEF.Enabled = True
+    btnIniciarADM.Enabled = True
+    btnIniciarPIX.Enabled = True
 End Sub
 
 ' botão que inicia o fluxo de uma transação PIX
@@ -362,12 +357,20 @@ Private Sub btnIniciarTEF_Click()
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    btnIniciarTEF.Enabled = False
+    btnIniciarADM.Enabled = False
+    btnIniciarPIX.Enabled = False
+    
     ' reseta o label do valor da transação
     valorTotal = lblValor.Text
     lblValor.Text = ""
     
     ' iniciafluxo responsável por iniciar a transação
     ElginTEF
+    
+    btnIniciarTEF.Enabled = True
+    btnIniciarADM.Enabled = True
+    btnIniciarPIX.Enabled = True
 End Sub
 
 ' botão que inicia o fluxo de uma operação ADM
@@ -382,8 +385,16 @@ Private Sub btnIniciarADM_Click()
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    btnIniciarTEF.Enabled = False
+    btnIniciarADM.Enabled = False
+    btnIniciarPIX.Enabled = False
+    
     ' iniciafluxo responsável por iniciar a transação
     ElginTEF
+    
+    btnIniciarTEF.Enabled = True
+    btnIniciarADM.Enabled = True
+    btnIniciarPIX.Enabled = True
 End Sub
 
 ' função usada na fase de coleta para mostrar elementos e escritas enviadas
@@ -395,7 +406,7 @@ Private Sub printTela(ByVal msg As String)
     lblOperador.Visible = False
     btnOk.Visible = False
     btnCancelar.Visible = False
-    ' imgQrCode.visible = false
+    imgQRCode.Visible = False
     
     ' QRCODE PIX
     ' caso esteja na fase de coleta de uma transação PIX, na String msg estará
@@ -408,7 +419,7 @@ Private Sub printTela(ByVal msg As String)
         
         ' tornar elements visíveis ao usuário
         imgQRCode.Visible = True
-        btnOk.Visible = True
+        ' btnOk.Visible = True
         ' btnCancelar.Visible = True
         
     ' caso não seja a coleta do pagamento do PIX, mas uma coleta de qualquer
@@ -426,12 +437,13 @@ Private Sub printTela(ByVal msg As String)
             btnCancelar.Visible = True
         End If
     End If
+    DoEvents
 End Sub
 
 ' Função usada na fase de coleta para mostrar elementos e escritas enviadas
 ' pela API em formato de ListBox à Automação Comercial
 Private Sub printTelaArray(elements() As String)
-    Dim I As Long
+    Dim i As Long
     
     ' reseta UI
     lstOperador.Clear
@@ -441,7 +453,7 @@ Private Sub printTelaArray(elements() As String)
     lblOperador.Visible = False
     btnOk.Visible = False
     btnCancelar.Visible = False
-    ' imgqrcode visible  = false
+    imgQRCode.Visible = False
     
     lblOperador.Visible = True
     btnCancelar.Visible = True
@@ -450,9 +462,9 @@ Private Sub printTelaArray(elements() As String)
 
 
     ' adiciona ao listOperador os elementos presentes no parâmetro da função
-    For I = LBound(elements) To UBound(elements)
-        lstOperador.AddItem (elements(I))
-    Next I
+    For i = LBound(elements) To UBound(elements)
+        lstOperador.AddItem (elements(i))
+    Next i
     
     ' torna o lstOperador visível ao usuário
     lstOperador.Visible = True
@@ -486,20 +498,11 @@ Public Sub ShowQRCode(qrCodeData As String)
     SaveByteArrayAsBitmapFile imageBytes, tempFilePath
     
     ' load the image file into the image control
-    'Dim hImage As Long
-    'hImage = LoadPicture(0, tempFilePath, 0, 0, 0, 0)
-    'sendmessage imgqrcode.hwnd
+    Dim token As Long
+    token = InitGDIPlus
+    imgQRCode.Picture = LoadPictureGDIPlus(tempFilePath, imgQRCode.Width / 15, imgQRCode.Height / 15, vbWhite)
+    FreeGDIPlus token
     
-    'DeleteObject hImage
-    
-    'boxQRCode.Picture = LoadPicture(App.Path & "\logo-idh.jpg")
-    'imgQRCode.Picture = LoadPicture(App.Path & "\temp_qrcode_image.bmp")
-    'imgQRCode.Visible = True
-    
-    'Dim hbitmap As Long
-    'hbitmap = LoadImage(App.hInstance, tempFilePath, 0, 0, 0, Defines.LR_LOADFROMFILE)
-    'MsgBox hbitmap
-    ' delete the temporary file
     Kill tempFilePath
 End Sub
 
@@ -723,7 +726,7 @@ Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As St
     Dim retorno As String
     Dim opcoes() As String
     Dim elements() As String
-    Dim I As Integer
+    Dim i As Integer
     
     ' extrair dados da resposta / coleta
     coletaRetorno = GetStringValue(root, "tef", "automacao_coleta_retorno")
@@ -765,10 +768,10 @@ Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As St
             opcoes = Split(coletaOpcao, ";")
             ReDim elements(UBound(opcoes))
             
-            For I = 0 To UBound(opcoes)
-                elements(I) = "[" & I & "] " & UCase(opcoes(I)) & vbCrLf
-                writeLogs ("[" & I & "] " & UCase(opcoes(I)) & vbCrLf)
-            Next I
+            For i = 0 To UBound(opcoes)
+                elements(i) = "[" & i & "] " & UCase(opcoes(i)) & vbCrLf
+                writeLogs ("[" & i & "] " & UCase(opcoes(i)) & vbCrLf)
+            Next i
             
             ' mostra na UI a lista de opções para que o usuário selecione
             printTelaArray elements
