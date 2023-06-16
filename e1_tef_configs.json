@@ -6,8 +6,8 @@
     "operacaoPendenciaCustomizada": true,
     "portaClientTCP": 60906,
     "sAdm": "",
-    "textoPinpad": "ApiTEFElgin VB6",
+    "textoPinpad": "Tef VB6",
     "uAdm": "",
     "verificarTransacoesPendentes": 1,
-    "versaoAC": "v1.0.1"
+    "versaoAC": "v1.0.0"
 }

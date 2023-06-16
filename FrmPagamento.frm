@@ -166,6 +166,14 @@ Begin VB.Form FrmPagamento
       TabIndex        =   0
       Top             =   120
       Width           =   5295
+      Begin VB.CommandButton Command1 
+         Caption         =   "Command1"
+         Height          =   495
+         Left            =   3000
+         TabIndex        =   13
+         Top             =   2760
+         Width           =   1815
+      End
       Begin VB.CommandButton btnIniciarTEF 
          Caption         =   "Iniciar TEF"
          BeginProperty Font 
@@ -224,16 +232,19 @@ Dim operacaoAtual As Integer
 Dim cancelarColeta As String
 Dim continuaColeta As Boolean
 
-' =============================
-' ====== MÉTODOS DE UI ========
-' =============================
+' ================================================
+' ----------====== MÉTODOS DE UI ========---------
+' ================================================
 
+' handle durante fase de coleta emq ue informações são pedidas ao usuário
 Private Sub OkEvent()
     Dim retList As String
     Dim retTxt As String
     
+    ' variável global usada no fluxo de transação para pegar retorno do usuário
     retornoUI = ""
     
+    ' se usuário não escolher nenhuma opção, pedir para que seja escolhida
     If lstOperador.Visible Then
         If lstOperador.ListIndex = -1 Then
             MsgBox "Escolha uma opção"
@@ -241,6 +252,7 @@ Private Sub OkEvent()
         End If
     End If
     
+    ' se usuário não escrever o valor pedido, pedir para que seja escrito
     If txtOperador.Visible Then
         If txtOperador.Text = "" Then
             MsgBox "Escreva o valor pedido"
@@ -248,6 +260,7 @@ Private Sub OkEvent()
         End If
     End If
     
+    ' pega valor escolhido pelo usuário
     retList = CStr(lstOperador.ListIndex)
     retTxt = txtOperador.Text
     
@@ -270,14 +283,32 @@ Private Sub OkEvent()
     continuaColeta = True
 End Sub
 
+' handle do botão ok
 Private Sub btnOk_Click()
     OkEvent
 End Sub
 
-Private Sub Command1_Click()
-    MsgBox lblValor.Text
+' handle da tecla enter em txt durante coleta
+Private Sub txtOperador_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        OkEvent
+    End If
 End Sub
 
+' botão de testes
+Private Sub Command1_Click()
+    Dim qrdata As String
+    Dim f As Integer
+    f = FreeFile(0)
+    Open "qrTest.txt" For Input As #f
+    qrdata = Input$(LOF(f), #f)
+    Close #f
+    
+    ShowQRCode qrdata
+End Sub
+
+' ao criar form resetar UI
+' e resetar variável que controla o fluxo de coleta
 Private Sub Form_Load()
     continuarColeta = False
     lblOperador.Visible = False
@@ -288,52 +319,75 @@ Private Sub Form_Load()
     imgQRCode.Visible = False
 End Sub
 
-Private Sub txtOperador_KeyPress(KeyAscii As Integer)
-    If KeyAscii = 13 Then       'User pressed the Enter key
-        OkEvent
-    End If
-End Sub
-
+' botão cancelar
 Private Sub btnCancelar_Click()
     ' define a variável global retornoUI = 0
     retornoUI = "0"
+
+    ' define variavel global cancelarColeta = 9 para que quando o fluxo da
+    ' transação for retomado, a transação seja cancelada (na função coleta)
     cancelarColeta = "9"
     continuarColeta = True
 End Sub
 
+' botão que inicia o fluxo de uma transação PIX
 Private Sub btnIniciarPIX_Click()
+
+    ' altera o estado da variével global operacaoAtual para que na função coleta
+    ' a função de operação PIX seja chamada
     operacaoAtual = Defines.OPERACAO_PIX
     
+    ' antes de começar a trnasação, feedback visual para o usuário saber que
+    ' a transação de operação PIX seja chamda
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    ' reseta o label do valor da transação
     valorTotal = lblValor.Text
     lblValor.Text = ""
     
+    ' iniciafluxo responsável por iniciar a transação
     ElginTEF
 End Sub
 
+' botão que inicia o fluxo de uma transação PIX
 Private Sub btnIniciarTEF_Click()
+
+    ' altera o estado da variével global operacaoAtual para que na função coleta
+    ' a função de operação PIX seja chamada
     operacaoAtual = Defines.OPERACAO_TEF
     
+    ' antes de começar a trnasação, feedback visual para o usuário saber que
+    ' a transação de operação PIX seja chamda
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    ' reseta o label do valor da transação
     valorTotal = lblValor.Text
     lblValor.Text = ""
     
+    ' iniciafluxo responsável por iniciar a transação
     ElginTEF
 End Sub
 
+' botão que inicia o fluxo de uma operação ADM
 Private Sub btnIniciarADM_Click()
+
+    ' altera o estado da variével global operacaoAtual para que na função coleta
+    ' a função de operação PIX seja chamada
     operacaoAtual = Defines.OPERACAO_ADM
     
+    ' antes de começar a trnasação, feedback visual para o usuário saber que
+    ' a transação de operação PIX seja chamda
     lblOperador.Visible = True
     lblOperador.Caption = "AGUARDE..."
     
+    ' iniciafluxo responsável por iniciar a transação
     ElginTEF
 End Sub
 
+' função usada na fase de coleta para mostrar elementos e escritas enviadas
+' pela API em formato de String à Automação Comercial
 Private Sub printTela(ByVal msg As String)
     ' reseta UI
     lstOperador.Visible = False
@@ -343,18 +397,28 @@ Private Sub printTela(ByVal msg As String)
     btnCancelar.Visible = False
     ' imgQrCode.visible = false
     
-    ' qrcode pix
+    ' QRCODE PIX
+    ' caso esteja na fase de coleta de uma transação PIX, na String msg estará
+    ' presente o texto 'QRCODE', caso isso seja identificado, adentra o
+    ' seguinte fluxo para mostrar o QRCode do pix na tela
     If InStr(msg, "QRCODE;") Then
+
+        ' função que gera a imagem do qrcode do pix
         ShowQRCode msg
         
-        'imgQRCode.Visible = True
-        'btnOk.Visible = True
-        'btnCancelar.Visible = True
+        ' tornar elements visíveis ao usuário
+        imgQRCode.Visible = True
+        btnOk.Visible = True
+        ' btnCancelar.Visible = True
         
+    ' caso não seja a coleta do pagamento do PIX, mas uma coleta de qualquer
+    ' outra funcionalidade, pressoguir no seguinte fluxo
     Else
+        ' definir o conteúdo do lblOperador e torná-lo visível ao usuário
         lblOperador.Caption = msg
         lblOperador.Visible = True
         
+        ' não mostra na tela nem os botões nem o txt ou durante processamento
         If Utils.MostrarBotoes(msg) Then
             txtOperador.Visible = True
             txtOperador.SetFocus
@@ -364,9 +428,12 @@ Private Sub printTela(ByVal msg As String)
     End If
 End Sub
 
+' Função usada na fase de coleta para mostrar elementos e escritas enviadas
+' pela API em formato de ListBox à Automação Comercial
 Private Sub printTelaArray(elements() As String)
-    Dim i As Long
+    Dim I As Long
     
+    ' reseta UI
     lstOperador.Clear
     
     lstOperador.Visible = False
@@ -380,18 +447,26 @@ Private Sub printTelaArray(elements() As String)
     btnCancelar.Visible = True
     btnOk.Visible = True
     
-    For i = LBound(elements) To UBound(elements)
-        lstOperador.AddItem (elements(i))
-    Next i
+
+
+    ' adiciona ao listOperador os elementos presentes no parâmetro da função
+    For I = LBound(elements) To UBound(elements)
+        lstOperador.AddItem (elements(I))
+    Next I
     
+    ' torna o lstOperador visível ao usuário
     lstOperador.Visible = True
 End Sub
 
+' escreve logs em tela
 Private Sub writeLogs(ByVal logs As String)
     txtLogs.Text = txtLogs & Defines.DIV_LOGS & logs
 End Sub
 
 ' Funções PIX
+' função que recebe como argumento a string de retorno da dll no formato
+' "QRCODE;[string Hexadecimal];[informações adicionais] uma String Hexadecimal
+' representando um qrcode (no caso de transações PIX) e o mostra na UI
 Public Sub ShowQRCode(qrCodeData As String)
     ' split the input string into its components
     Dim components() As String
@@ -411,15 +486,21 @@ Public Sub ShowQRCode(qrCodeData As String)
     SaveByteArrayAsBitmapFile imageBytes, tempFilePath
     
     ' load the image file into the image control
+    'Dim hImage As Long
+    'hImage = LoadPicture(0, tempFilePath, 0, 0, 0, 0)
+    'sendmessage imgqrcode.hwnd
+    
+    'DeleteObject hImage
+    
     'boxQRCode.Picture = LoadPicture(App.Path & "\logo-idh.jpg")
-    'imgQRCode.Picture = LoadPicture(App.Path & "\temp_qrcode_image.jpg")
+    'imgQRCode.Picture = LoadPicture(App.Path & "\temp_qrcode_image.bmp")
     'imgQRCode.Visible = True
     
     'Dim hbitmap As Long
     'hbitmap = LoadImage(App.hInstance, tempFilePath, 0, 0, 0, Defines.LR_LOADFROMFILE)
     'MsgBox hbitmap
     ' delete the temporary file
-    'Kill tempFilePath
+    Kill tempFilePath
 End Sub
 
 
@@ -450,8 +531,22 @@ Private Sub ElginTEF()
     End If
     
     ' (2) REALIZAR OPERAÇÃO
+
+    ' define variável "sequencial" a partir do retorno da função "iniciar"
+    ' e incrementa seu valor para ser enviado na próxima chamada à API
     sequencial = incrementarSequencial(GetSequencial(start))
     
+    ' possíveis chamadas a serem feitas
+    ' resp = Vender(0, ...) -- Pgto --> Perguntar tipo do cartão
+    ' resp = Vender(1, ...) -- Pgto --> Cartão de crédito
+    ' resp = Vender(2, ...) -- Pgto --> Cartão de débito
+    ' resp = Vender(3, ...) -- Pgto --> Voucher (débito)
+    ' resp = Vender(4, ...) -- Pgto --> Frota (débito)
+    ' resp = Vender(5, ...) -- Pgto --> Private label (credito)
+    ' resp = Vender(5, ...) -- Pgto --> Perguntar tipo do cartão
+        
+    ' dependendo do estado da variável "operacaoAtual" seguir com o fluxo da
+    ' operação escolhida pelo usuário
     If operacaoAtual = Defines.OPERACAO_TEF Then
         resp = Vender(0, sequencial, Defines.OPERACAO_TEF)
     ElseIf operacaoAtual = Defines.OPERACAO_ADM Then
@@ -460,18 +555,27 @@ Private Sub ElginTEF()
         resp = Vender(0, sequencial, Defines.OPERACAO_PIX)
     End If
     
+    ' extrair a chave "retorno" do retorno da função vender
     retorno = GetRetorno(resp)
     
+    ' se a chave retorno não estiver presente, ou seja, for igual a "",
+    ' continuar para o fluxo de coleta
     If retorno = "" Then
         resp = Coletar(operacaoAtual, Jsonify(resp))
+        ' extrair a chave "retorno" do retorno da função coleta
         retorno = GetRetorno(resp)
     End If
     
     ' (3) VERIFICAR RESULTADO / CONFIRMAR
+    ' se a chave retorno não estiver presente no retorno da função "coleta",
+    ' finalizar operação com erro
     If retorno = "" Then
         writeLogs ("ERRO AO COLETAR DADOS")
         printTela ("ERROR AO COLETAR DADOS")
+
     ElseIf retorno = "0" Then
+        ' extrair comprovantes das respectivas chaves no retorno da
+        ' função "coletar"
         comprovanteLoja = GetComprovante(resp, "loja")
         comprovanteCliente = GetComprovante(resp, "cliente")
         writeLogs (comprovanteLoja)
@@ -479,12 +583,16 @@ Private Sub ElginTEF()
         writeLogs ("TRANSAÇÃO OK< INICIANDO CONFIRMAÇÃO...")
         printTela ("TRANSAÇÃO OK< INICIANDO CONFIRMAÇÃO...")
         
+        ' extrair valor da chave "sequencial" retornado pela função "coleta"
         sequencial = GetSequencial(resp)
         
-        cnf = Confirmar(sequencial)
+        ' confirma a operação por meio do sequencial utilizado
+        cnf = confirmar(sequencial)
         
+        ' extrair chave "retorno" do retorno da função confirmar
         retorno = GetRetorno(cnf)
         
+        ' se a chave retorno for vazia ou diferente de "1" finalizar
         If retorno <> "1" Then
             Finalizar
         End If
@@ -509,30 +617,51 @@ End Sub
 ' ====== MÉTODOS PARA CONTROLE DA TRANSAÇÃO ======
 ' ================================================
 
-
 Private Function Iniciar() As String
     Dim resultado As String
     Dim payload As JsonBag
     Set payload = New JsonBag
     
-    ' add examples
+    ' possíveis valores a serem adicionados ao payload, porém não necessários
+    ' se for escolhido usar os valores default definidos nas funções
+    ' SetClientTCP e ConfigurarDadosPDV
+
+    ' payload.Item("aplicacao") = "Meu PDV"
+    ' payload.Item("aplicacao_tela") = "Meu PDV"
+    ' payload.Item("versao") = "v1.0.0"
+    ' payload.Item("estabelecimento") = "Elgin"
+    ' payload.Item("loja") = "01"
+    ' payload.Item("terminal") = "T004"
+    ' payload.Item("nomeAC") = "Meu PDV"
+    ' payload.Item("textoPinpad") = "Meu PDV"
+    ' payload.Item("versaoAC") = "v1.0.0"
+    ' payload.Item("nomeEstabelecimento") = "Elgin"
+    ' payload.Item("identificadorPontoCaptura") = "T004"
     
+    ' conforme a documentação:
+    ' https://elgindevelopercommunity.github.io/group__tf.html#ga1bf9edea41af3c30936caf5ce7f8c988
     resultado = StrPtrToString(IniciarOperacaoTEF(Stringify(payload)))
     
-    ' logs
+    ' mostrar na UI o retorno da função
+    writeLogs ("INICIAR: " & Jsonify(resultado).JSON)
+    
+    ' libera a memória ocupada pela instância de JsonBag
     Set payload = Nothing
     
+    ' retorna a string retornada pela função IniciarOperacaoTEF
     Iniciar = resultado
 End Function
 
 Private Function Vender(ByVal cartao As Integer, ByVal sequencial As String, ByVal operacao As Integer) As String
-    Dim resultado As String
-    Dim payload As JsonBag
+    Dim resultado As String ' string para armazenar os retornos da DLL
+    Dim payload As JsonBag ' objecto JSON para armazenar os dados da transação
+
     Set payload = New JsonBag
     
-    ' logs
+    ' registra um log com o sequencial utilizado na venda
     writeLogs ("VENDER: " & "SEQUENCIAL USADO NA VENDA" & sequencial)
     
+    ' adiciona o sequencial ao objeto payload
     payload.Item("sequencial") = sequencial
     
     ' verificar valorTotal
@@ -551,6 +680,7 @@ Private Function Vender(ByVal cartao As Integer, ByVal sequencial As String, ByV
     
     Set payload = Nothing
     
+    ' retorna resultado dll
     Vender = resultado
 End Function
 
@@ -564,6 +694,8 @@ Private Function Adm(ByVal opcao As Integer, ByVal sequencial As String) As Stri
     
     payload.Item("sequencial") = sequencial
     
+    ' payload.Item("admUsuario") = ADM_USUARIO
+    ' payload.Item("admSena") = ADM_SENHA
     resultado = StrPtrToString(RealizarAdmTEF(CLng(opcao), Stringify(payload), True))
     
     ' logs
@@ -574,6 +706,9 @@ Private Function Adm(ByVal opcao As Integer, ByVal sequencial As String) As Stri
     Adm = resultado
 End Function
 
+' COLETAR
+' segue a lógica de coleta explicada na documentação
+' https://elgindevelopercommunity.github.io/group__t21.html
 Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As String
     ' chaves utilizadas na coleta
     Dim coletaRetorno As String ' In/Out; out: 0 = continuar coleta, 9 = cancelar coleta
@@ -588,7 +723,7 @@ Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As St
     Dim retorno As String
     Dim opcoes() As String
     Dim elements() As String
-    Dim i As Integer
+    Dim I As Integer
     
     ' extrair dados da resposta / coleta
     coletaRetorno = GetStringValue(root, "tef", "automacao_coleta_retorno")
@@ -612,30 +747,46 @@ Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As St
     payload.Item("automacao_coleta_sequencial") = coletaSequencial
     
     ' COLETA DADOS DO USUÁRIO
+    ' se a chave coletaTipo não for vazia e a chave coletaOpcao for vazia
+    ' quer dizer que a API está pedindo por um valor que o usuário
+    ' precisa digitar
     If coletaTipo <> "" Then
         If coletaOpcao = "" Then
             writeLogs ("INFORME O VALOR SOLICITADO: ")
             coletaInformacao = ReadInput
+
+            ' adicionano payload valor digitado pelo usuário
             payload.Item("automacao_coleta_informacao") = coletaInformacao
+
+        ' se a chave coletaTipo não for vazia e a chave coletaOpcao também não for
+        ' vazia quer dizer que a API está pedindo por um valor que o usuário
+        ' precisa escolher dentre algumas opções
         ElseIf coletaOpcao <> "" Then
             opcoes = Split(coletaOpcao, ";")
             ReDim elements(UBound(opcoes))
             
-            For i = 0 To UBound(opcoes)
-                elements(i) = "[" & i & "] " & UCase(opcoes(i)) & vbCrLf
-                writeLogs ("[" & i & "] " & UCase(opcoes(i)) & vbCrLf)
-            Next i
+            For I = 0 To UBound(opcoes)
+                elements(I) = "[" & I & "] " & UCase(opcoes(I)) & vbCrLf
+                writeLogs ("[" & I & "] " & UCase(opcoes(I)) & vbCrLf)
+            Next I
             
+            ' mostra na UI a lista de opções para que o usuário selecione
             printTelaArray elements
             writeLogs (vbCrLf & "SELECIONE A OPÇÃO DESEJADA: ")
             
             Dim read As String
             read = ReadInput
+            ' espera o input do usuário para contrinuar o fluxo. Função readInput
+            ' irá retornar o index do array da opção escolhida
             coletaInformacao = opcoes(CInt(read))
+
+            ' adicionano payload valor digitado pelo usuário
             payload.Item("automacao_coleta_informacao") = coletaInformacao
         End If
         
         ' verifica variável global "cancelarColeta"
+        ' se houve cancelamento do usuário, adiciona a chave com cancelamento
+        ' para avisar a DLL
         If cancelarColeta <> "" Then
             payload.Item("automacao_coleta_retorno") = cancelarColeta
             cancelarColeta = ""
@@ -668,8 +819,8 @@ Private Function Coletar(ByVal operacao As Integer, ByVal root As JsonBag) As St
     Coletar = Coletar(operacao, Jsonify(resp))
 End Function
 
-
-Private Function Confirmar(ByVal sequencial As String) As String
+' função que confirma transação realizada
+Private Function confirmar(ByVal sequencial As String) As String
     Dim resultado As String
     
     writeLogs ("CONFIRMAR: " & "SEQUENCIAL DA OPERAÇÂO A SER CONFIRMADA: ")
@@ -677,7 +828,7 @@ Private Function Confirmar(ByVal sequencial As String) As String
     
     resultado = StrPtrToString(ConfirmarOperacaoTEF(CLng(sequencial), 1))
     writeLogs ("CONFIRMAR: " & Jsonify(resultado).JSON)
-    Confirmar = resultado
+    confirmar = resultado
 End Function
 
 Private Function Finalizar() As String
@@ -690,6 +841,9 @@ Private Function Finalizar() As String
     Finalizar = resultado
 End Function
 
+' função chamada quando necessário pegar algum retorno do usuário
+' "pausa" a execução do programa até o usuário informar o dado pedido
+' na UI
 Private Function ReadInput() As String
     Do While Not continuaColeta
         DoEvents

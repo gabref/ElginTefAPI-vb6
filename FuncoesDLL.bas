@@ -20,5 +20,6 @@ Public Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
 Public Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Public Declare Function SysAllocStringByteLen Lib "oleaut32.dll" (ByVal m_pBase As Long, ByVal l As Long) As String
 
-Public Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal dwImageType As Long, ByVal dwDesiredWidth As Long, ByVal dwDesiredHeight As Long, ByVal dwFlags As Long) As Long
+'Public Declare Function LoadPicture Lib "GDI32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal un1 As Long, ByVal n1 As Long, ByVal n2 As Long, ByVal un2 As Long) As Long
+'Public Declare Function DeleteObject Lib "GDI32" (ByVal hObject As Long) As Long
 

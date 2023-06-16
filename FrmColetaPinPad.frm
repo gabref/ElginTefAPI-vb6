@@ -206,7 +206,18 @@ Private Sub btnColeta_Click()
     writeLogs ("INICIANDO CONFIRMAÇÃO")
     
     ' faz algo com o valor coletado
-    ' ...
+    ' nesse exemplo são adicionadas as máscaras dos valores
+    Select Case tipoColeta
+        Case 1
+            resultadoCapturaPinPad = FormatRG(resultadoCapturaPinPad)
+        Case 2
+            resultadoCapturaPinPad = FormatCPF(resultadoCapturaPinPad)
+        Case 3
+            resultadoCapturaPinPad = FormatCNPJ(resultadoCapturaPinPad)
+        Case 4
+            resultadoCapturaPinPad = FormatPhone(resultadoCapturaPinPad)
+    End Select
+
     
     retorno = StrPtrToString(ConfirmarCapturaPinPad(tipoColeta, resultadoCapturaPinPad))
     

@@ -9,6 +9,23 @@ Begin VB.Form FrmMain
    ScaleHeight     =   4290
    ScaleWidth      =   6345
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton btnConfigurar 
+      Caption         =   "Configurar Terminal"
+      BeginProperty Font 
+         Name            =   "Verdana"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   840
+      TabIndex        =   2
+      Top             =   360
+      Width           =   4455
+   End
    Begin VB.CommandButton btnCarregar 
       Caption         =   "Carregar Funções"
       BeginProperty Font 
@@ -23,7 +40,7 @@ Begin VB.Form FrmMain
       Height          =   615
       Left            =   840
       TabIndex        =   1
-      Top             =   2760
+      Top             =   3240
       Width           =   4455
    End
    Begin VB.ListBox lstMenu 
@@ -41,7 +58,7 @@ Begin VB.Form FrmMain
       Left            =   840
       List            =   "FrmMain.frx":0002
       TabIndex        =   0
-      Top             =   840
+      Top             =   1440
       Width           =   4455
    End
 End
@@ -64,43 +81,14 @@ Private Sub btnCarregar_Click()
     End If
 End Sub
 
-Private Function Iniciar() As String
-    Dim resultado As String
-    Dim payload As JsonBag
-    Set payload = New JsonBag
-    
-    ' add examples
-    
-    resultado = IniciarOperacaoTEF(Stringify(payload))
-    
-    ' logs
-    Set payload = Nothing
-    
-    Iniciar = resultado
-End Function
-
-Private Function Vender(ByVal cartao As Integer, ByVal sequencial As String, ByVal operacao As Integer) As String
-    Dim resultado As String
-    Dim payload As JsonBag
-    Set payload = New JsonBag
-    
-    ' logs
-    
-    payload.Item("sequencial") = sequencial
-    
-    ' verificar valorTotal
-    If operacao = 1 Then
-        resultado = RealizarPagamentoTEF(CLng(cartao), Stringify(payload), True)
-    Else
-        resultado = RealizarPixTEF(Stringify(payload), True)
-    End If
-    
-    ' logs
-    
-    Set payload = Nothing
-    
-    Vender = resultado
-End Function
+Private Sub btnConfigurar_Click()
+    Dim ret As String
+    ' configurar dados pdv
+    ret = StrPtrToString(SetClientTCP("127.0.0.1", 60906))
+    MsgBox "Set Client TCP: " & ret
+    ret = StrPtrToString(ConfigurarDadosPDV("Tef VB6", "v1.0.0", "Elgin", "01", "T003"))
+    MsgBox "Configurar Dados PDV: " & ret
+End Sub
 
 Private Sub Form_Load()
     lstMenu.AddItem ("Operações TEF e Adm")

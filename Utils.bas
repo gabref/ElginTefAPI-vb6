@@ -1,4 +1,9 @@
 Attribute VB_Name = "Utils"
+
+' ================================================================== '
+' ========== METODOS UTILITÁRIOS PARA O EXEMPLO VB6 ================ '
+' ================================================================== '
+
 Public Function incrementarSequencial(ByVal sequencial As String) As String
     Dim seq As String
     If IsNumeric(sequencial) Then
@@ -67,19 +72,19 @@ Public Function MostrarBotoes(ByVal mensagem As String) As Boolean
     Dim msgArray As Variant
     msgArray = Array("aguarde", "finalizada", "passagem", "cancelada", "iniciando confirmação")
     
-    Dim i As Integer
+    Dim I As Integer
     Dim msgToLower As String
     msgToLower = LCase(mensagem)
     
     Dim showButtons As Boolean
     showButtons = True
     
-    For i = LBound(msgArray) To UBound(msgArray)
-        If InStr(msgToLower, LCase(msgArray(i))) <> 0 Then
+    For I = LBound(msgArray) To UBound(msgArray)
+        If InStr(msgToLower, LCase(msgArray(I))) <> 0 Then
             showButtons = False
             Exit For
         End If
-    Next i
+    Next I
     
     MostrarBotoes = showButtons
 End Function
@@ -105,15 +110,14 @@ Public Function HexToByteArray(ByVal hexString As String) As Byte()
     ReDim byteArray(0 To numBytes - 1) As Byte
     
     ' Convert each pair of hex characters to a byte
-    Dim i As Long
-    For i = 0 To numBytes - 1
-        byteArray(i) = Val("&H" & Mid(hexString, i * 2 + 1, 2))
-    Next i
+    Dim I As Long
+    For I = 0 To numBytes - 1
+        byteArray(I) = Val("&H" & Mid(hexString, I * 2 + 1, 2))
+    Next I
     
     ' Return the resulting byte array
     HexToByteArray = byteArray
 End Function
-
 
 Public Sub SaveByteArrayAsBitmapFile(ByRef byteArray() As Byte, ByVal filePath As String)
     ' Create a binary file and write the byte array to it
@@ -124,4 +128,32 @@ Public Sub SaveByteArrayAsBitmapFile(ByRef byteArray() As Byte, ByVal filePath A
     Put fileNumber, , byteArray
     Close fileNumber
 End Sub
+
+Function FormatCPF(cpf As String) As String
+    FormatCPF = Mid(cpf, 1, 3) & "." & _
+                Mid(cpf, 4, 3) & "." & _
+                Mid(cpf, 7, 3) & "." & _
+                Mid(cpf, 10, 2)
+End Function
+
+Function FormatRG(rg As String) As String
+    FormatRG = Mid(rg, 1, 2) & "." & _
+               Mid(rg, 3, 3) & "." & _
+               Mid(rg, 6, 3) & "-" & _
+               Mid(rg, 9, 1)
+End Function
+
+Function FormatCNPJ(cnpj As String) As String
+    FormatCNPJ = Mid(cnpj, 1, 2) & "." & _
+                 Mid(cnpj, 3, 3) & "." & _
+                 Mid(cnpj, 6, 3) & "/" & _
+                 Mid(cnpj, 9, 4) & "-" & _
+                 Mid(cnpj, 13, 2)
+End Function
+
+Function FormatPhone(phone As String) As String
+    FormatPhone = "(" & Mid(phone, 1, 2) & ") " & _
+                  Mid(phone, 3, 5) & "-" & _
+                  Mid(phone, 8, 4)
+End Function
 
